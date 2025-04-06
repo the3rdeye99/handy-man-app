@@ -56,4 +56,28 @@ router.post('/users/delete-multiple', async (req, res) => {
   }
 });
 
+// Delete a single user
+router.post('/users/delete', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Delete from Firestore
+    await db.collection('users').doc(userId).delete();
+
+    // Delete from Auth
+    await admin.auth().deleteUser(userId);
+
+    res.json({ 
+      success: true, 
+      message: 'User deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error instanceof Error ? error.message : 'Failed to delete user' 
+    });
+  }
+});
+
 export default router; 
